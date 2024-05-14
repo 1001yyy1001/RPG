@@ -11,7 +11,6 @@ import humans.Wizard;
 import monsters.Dragon;
 import monsters.Oak;
 import monsters.Slime;
-import utils.Dice;
 
 public class Main {
     public static void main(String[] args) {
@@ -41,35 +40,33 @@ public class Main {
         while (!humans.isEmpty() && !monsters.isEmpty()) {
             System.out.printf("\n★ 第%d回戦 ==========\n", count);
 
+            System.out.println("[人間のターン！]");
             Human selectedHuman = choiceHuman(humans);
             Monster selectedMonster = choiceMonster(monsters);
 
             if (selectedHuman != null && selectedMonster != null) {
                 selectedHuman.attack(selectedMonster);
                 if (selectedMonster.getHp() <= 0) {
-                    System.out.println(selectedMonster.getName() + "が倒れた！");
+                    System.out.println("★「" + selectedMonster.getName() + "」は倒れた。");
                     monsters.remove(selectedMonster);
+                }
+                if (monsters.isEmpty()) {
+                    break;
                 }
             }
 
-            if (monsters.isEmpty()) {
-                System.out.println("人間グループの勝利！");
-                break;
-            }
-
-            selectedMonster = choiceMonster(monsters);
+            System.out.println("[モンスターのターン！]");
             selectedHuman = choiceHuman(humans);
+            selectedMonster = choiceMonster(monsters);
 
             if (selectedMonster != null && selectedHuman != null) {
                 selectedMonster.attack(selectedHuman);
                 if (selectedHuman.getHp() <= 0) {
-                    System.out.println(selectedHuman.getName() + "が倒れた！");
+                    System.out.println("★「" + selectedHuman.getName() + "」は倒れた。");
                     humans.remove(selectedHuman);
                 }
             }
-
             if (humans.isEmpty()) {
-                System.out.println("モンスターグループの勝利！");
                 break;
             }
 
@@ -77,13 +74,19 @@ public class Main {
             count++;
         }
 
+        System.out.println("★★ ==== 決着がついた！！ ==== ★★");
+        if (humans.isEmpty()) {
+            System.out.println("#### モンスター達は勝利した！！ ####");
+        } else {
+            System.out.println("#### 人間達は勝利した！！ ####");
+        }
+
         showGroupInfos(humans, monsters);
-        System.out.println("★★ ==== 戦いが終了しました！ ==== ★★");
     }
 
     public static Human choiceHuman(List<Human> humans) {
         if (humans.isEmpty()) return null;
-        int index = Dice.get(0, humans.size() - 1);
+        int index = utils.Dice.get(0, humans.size() - 1);
         Human selected = humans.get(index);
         System.out.printf("人間グループから「%s」のお出ましだ！\n", selected.getName());
         return selected;
@@ -91,7 +94,7 @@ public class Main {
 
     public static Monster choiceMonster(List<Monster> monsters) {
         if (monsters.isEmpty()) return null;
-        int index = Dice.get(0, monsters.size() - 1);
+        int index = utils.Dice.get(0, monsters.size() - 1);
         Monster selected = monsters.get(index);
         System.out.printf("モンスターグループから「%s」のお出ましだ！\n", selected.getName());
         return selected;
